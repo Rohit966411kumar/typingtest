@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Speed Test</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light Mode Colors */
+            --primary-light: #4a6fa5;
+            --secondary-light: #166088;
+            --accent-light: #4fc3f7;
+            --correct-light: #4caf50;
+            --incorrect-light: #f44336;
+            --background-light: #f5f7fa;
+            --text-light: #333;
+            --card-light: #ffffff;
+            --border-light: #e0e0e0;
+            
+            /* Dark Mode Colors */
+            --primary-dark: #6d9ed6;
+            --secondary-dark: #1a7fb4;
+            --accent-dark: #81d4fa;
+            --correct-dark: #66bb6a;
+            --incorrect-dark: #ef5350;
+            --background-dark: #121212;
+            --text-dark: #e0e0e0;
+            --card-dark: #1e1e1e;
+            --border-dark: #333;
+            
+            /* Current Theme Variables */
+            --primary: var(--primary-light);
+            --secondary: var(--secondary-light);
+            --accent: var(--accent-light);
+            --correct: var(--correct-light);
+            --incorrect: var(--incorrect-light);
+            --background: var(--background-light);
+            --text: var(--text-light);
+            --card: var(--card-light);
+            --border: var(--border-light);
+        }
+
+        [data-theme="dark"] {
+            --primary: var(--primary-dark);
+            --secondary: var(--secondary-dark);
+            --accent: var(--accent-dark);
+            --correct: var(--correct-dark);
+            --incorrect: var(--incorrect-dark);
+            --background: var(--background-dark);
+            --text: var(--text-dark);
+            --card: var(--card-dark);
+            --border: var(--border-dark);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.1) 0px, 
+                transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0px, 
+                transparent 50%);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0;
+            color: var(--secondary);
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .theme-toggle {
+            background: var(--card);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            color: var(--text);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-box {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-box span {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            display: block;
+        }
+
+        .stat-box small {
+            color: var(--text);
+            opacity: 0.8;
+            font-size: 0.8rem;
+        }
+
+        .controls {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .control-group {
+            margin-bottom: 0;
+        }
+
+        .control-group h3 {
+            margin-bottom: 10px;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn {
+            background: var(--background);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text);
+        }
+
+        .btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn.primary {
+            background: var(--secondary);
+            color: white;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            border: none;
+            grid-column: 1 / -1;
+            justify-self: center;
+        }
+
+        .btn.primary:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .custom-text {
+            grid-column: 1 / -1;
+        }
+
+        .custom-text textarea {
+            width: 100%;
+            height: 80px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            resize: none;
+            margin-bottom: 10px;
+            font-family: 'Roboto', sans-serif;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        .typing-area {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #text-display {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+            flex: 1;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--background);
+            overflow-y: auto;
+            max-height: 200px;
+        }
+
+        #text-input {
+            width: 100%;
+            min-height: 100px;
+            padding: 15px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            resize: none;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        #text-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.2);
+        }
+
+        .speed-meter {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .speed-meter h3 {
+            margin-bottom: 15px;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .meter-container {
+            background: var(--background);
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .meter-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff5252, #ff9800, #4caf50);
+            transition: width 0.3s;
+        }
+
+        .meter-labels {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text);
+            opacity: 0.8;
+            font-size: 0.7rem;
+        }
+
+        .results {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-align: center;
+            display: none;
+            border: 1px solid var(--border);
+        }
+
+        .results h2 {
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .result-stats h3 {
+            color: var(--text);
+            opacity: 0.8;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .result-stats p {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Character highlighting */
+        .correct {
+            color: var(--correct);
+        }
+
+        .incorrect {
+            color: var(--incorrect);
+            text-decoration: underline;
+        }
+
+        .current {
+            background-color: rgba(79, 195, 247, 0.2);
+            border-radius: 2px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats, .result-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-height: 800px) {
+            #text-display {
+                max-height: 150px;
+            }
+            
+            .typing-area {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Typing Speed Test</h1>
+            <button class="theme-toggle" id="theme-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+        </header>
+
+        <div class="stats">
+            <div class="stat-box">
+                <span id="wpm">0</span>
+                <small>WPM</small>
+            </div>
+            <div class="stat-box">
+                <span id="accuracy">100</span>
+                <small>% Accuracy</small>
+            </div>
+            <div class="stat-box">
+                <span id="timer">60</span>
+                <small>Seconds</small>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group difficulty">
+                <h3>Difficulty</h3>
+                <div class="btn-group">
+                    <button class="btn active" data-difficulty="easy">Easy</button>
+                    <button class="btn" data-difficulty="medium">Medium</button>
+                    <button class="btn" data-difficulty="hard">Hard</button>
+                </div>
+            </div>
+            
+            <div class="control-group time">
+                <h3>Time</h3>
+                <div class="btn-group">
+                    <button class="btn" data-time="15">15s</button>
+                    <button class="btn active" data-time="60">60s</button>
+                    <button class="btn" data-time="120">2m</button>
+                </div>
+            </div>
+            
+            <div class="control-group time">
+                <h3>More Time</h3>
+                <div class="btn-group">
+                    <button class="btn" data-time="300">5m</button>
+                    <button class="btn" data-time="600">10m</button>
+                    <button class="btn" data-time="1800">30m</button>
+                </div>
+            </div>
+            
+            <div class="control-group custom-text">
+                <h3>Custom Text</h3>
+                <textarea id="custom-text" placeholder="Enter your own text here..."></textarea>
+                <button id="use-custom" class="btn">Use Custom Text</button>
+            </div>
+            
+            <button id="start-test" class="btn primary">Start Test</button>
+            <button id="reset-test" class="btn">Reset</button>
+        </div>
+
+        <div class="typing-area">
+            <div id="text-display"></div>
+            <textarea id="text-input" placeholder="Click 'Start Test' and begin typing here..." disabled></textarea>
+        </div>
+
+        <div class="speed-meter">
+            <h3>Typing Speed</h3>
+            <div class="meter-container">
+                <div class="meter-bar" id="speed-meter"></div>
+            </div>
+            <div class="meter-labels">
+                <span>0</span>
+                <span>25</span>
+                <span>50</span>
+                <span>75</span>
+                <span>100+</span>
+            </div>
+        </div>
+
+        <div class="results" id="results">
+            <h2>Test Complete!</h2>
+            <div class="result-stats">
+                <div>
+                    <h3>Speed</h3>
+                    <p><span id="final-wpm">0</span> WPM</p>
+                </div>
+                <div>
+                    <h3>Accuracy</h3>
+                    <p><span id="final-accuracy">0</span>%</p>
+                </div>
+                <div>
+                    <h3>Characters</h3>
+                    <p><span id="final-chars">0</span>/<span id="total-chars">0</span></p>
+                </div>
+            </div>
+            <button id="try-again" class="btn primary">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Sample texts for different difficulty levels
+        const sampleTexts = {
+            easy: [
+                "The quick brown fox jumps over the lazy dog. This sentence contains all the letters in the English alphabet.",
+                "Learning to type quickly and accurately is an important skill in today's digital world. Practice makes perfect.",
+                "The sun was shining brightly as the children played in the park. It was a beautiful summer day."
+            ],
+            medium: [
+                "Programming is the process of creating a set of instructions that tell a computer how to perform a task. It can be done using various programming languages.",
+                "The human brain contains approximately 86 billion neurons, each connected to thousands of other neurons, forming an incredibly complex network.",
+                "Global warming refers to the long-term rise in the average temperature of the Earth's climate system, primarily due to human activities."
+            ],
+            hard: [
+                "Quantum computing leverages quantum-mechanical phenomena such as superposition and entanglement to perform calculations. Unlike classical computers, quantum computers use qubits which can exist in multiple states simultaneously.",
+                "The Second Law of Thermodynamics states that the total entropy of an isolated system can never decrease over time, and is constant if and only if all processes are reversible.",
+                "Neuroscientific research has demonstrated that neuroplasticity allows the neurons in the brain to compensate for injury and disease and to adjust their activities in response to new situations or changes in their environment."
+            ]
+        };
+
+        // DOM elements
+        const textDisplay = document.getElementById('text-display');
+        const textInput = document.getElementById('text-input');
+        const wpmDisplay = document.getElementById('wpm');
+        const accuracyDisplay = document.getElementById('accuracy');
+        const timerDisplay = document.getElementById('timer');
+        const startButton = document.getElementById('start-test');
+        const resetButton = document.getElementById('reset-test');
+        const difficultyButtons = document.querySelectorAll('[data-difficulty]');
+        const timeButtons = document.querySelectorAll('[data-time]');
+        const customTextArea = document.getElementById('custom-text');
+        const useCustomButton = document.getElementById('use-custom');
+        const speedMeter = document.getElementById('speed-meter');
+        const resultsSection = document.getElementById('results');
+        const finalWpm = document.getElementById('final-wpm');
+        const finalAccuracy = document.getElementById('final-accuracy');
+        const finalChars = document.getElementById('final-chars');
+        const totalChars = document.getElementById('total-chars');
+        const tryAgainButton = document.getElementById('try-again');
+        const themeToggle = document.getElementById('theme-toggle');
+
+        // Test variables
+        let timer;
+        let timeLeft;
+        let isTestRunning = false;
+        let startTime;
+        let totalKeystrokes = 0;
+        let correctKeystrokes = 0;
+        let currentDifficulty = 'easy';
+        let currentTime = 60;
+        let currentText = '';
+        let usingCustomText = false;
+
+        // Initialize
+        function init() {
+            // Set up theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            setDifficulty('easy');
+            setTime(60);
+            updateDisplayText(sampleTexts.easy[0]);
+            
+            // Event listeners
+            startButton.addEventListener('click', startTest);
+            resetButton.addEventListener('click', resetTest);
+            tryAgainButton.addEventListener('click', resetTest);
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            difficultyButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    difficultyButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    currentDifficulty = button.dataset.difficulty;
+                    if (!usingCustomText) {
+                        updateDisplayText(getRandomText(currentDifficulty));
+                    }
+                });
+            });
+            
+            timeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    timeButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    currentTime = parseInt(button.dataset.time);
+                    timerDisplay.textContent = currentTime;
+                });
+            });
+            
+            useCustomButton.addEventListener('click', () => {
+                if (customTextArea.value.trim() !== '') {
+                    currentText = customTextArea.value;
+                    updateDisplayText(currentText);
+                    usingCustomText = true;
+                    difficultyButtons.forEach(btn => btn.classList.remove('active'));
+                }
+            });
+            
+            textInput.addEventListener('input', checkTyping);
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Get random text based on difficulty
+        function getRandomText(difficulty) {
+            const texts = sampleTexts[difficulty];
+            return texts[Math.floor(Math.random() * texts.length)];
+        }
+
+        // Update the display text
+        function updateDisplayText(text) {
+            currentText = text;
+            textDisplay.innerHTML = '';
+            text.split('').forEach(char => {
+                const span = document.createElement('span');
+                span.textContent = char;
+                textDisplay.appendChild(span);
+            });
+            totalChars.textContent = text.length;
+        }
+
+        // Start the typing test
+        function startTest() {
+            if (isTestRunning) return;
+            
+            isTestRunning = true;
+            startTime = new Date().getTime();
+            timeLeft = currentTime;
+            totalKeystrokes = 0;
+            correctKeystrokes = 0;
+            
+            // Reset display
+            textDisplay.querySelectorAll('span').forEach(span => {
+                span.className = '';
+            });
+            textDisplay.querySelector('span').classList.add('current');
+            
+            // Enable input
+            textInput.value = '';
+            textInput.disabled = false;
+            textInput.focus();
+            
+            // Start timer
+            timer = setInterval(updateTimer, 1000);
+            
+            // Update UI
+            startButton.disabled = true;
+            resetButton.disabled = false;
+            resultsSection.style.display = 'none';
+        }
+
+        // Update timer
+        function updateTimer() {
+            timeLeft--;
+            timerDisplay.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                endTest();
+            }
+        }
+
+        // Check typing against displayed text
+        function checkTyping() {
+            const inputText = textInput.value;
+            const displaySpans = textDisplay.querySelectorAll('span');
+            
+            // Reset all spans
+            displaySpans.forEach(span => {
+                span.className = '';
+            });
+            
+            let allCorrect = true;
+            for (let i = 0; i < inputText.length; i++) {
+                if (i < displaySpans.length) {
+                    if (inputText[i] === displaySpans[i].textContent) {
+                        displaySpans[i].classList.add('correct');
+                        correctKeystrokes++;
+                    } else {
+                        displaySpans[i].classList.add('incorrect');
+                        allCorrect = false;
+                    }
+                }
+            }
+            
+            // Highlight current character
+            if (inputText.length < displaySpans.length) {
+                displaySpans[inputText.length].classList.add('current');
+            }
+            
+            // Update stats
+            totalKeystrokes += inputText.length - (totalKeystrokes - correctKeystrokes);
+            const accuracy = totalKeystrokes > 0 ? Math.round((correctKeystrokes / totalKeystrokes) * 100) : 100;
+            accuracyDisplay.textContent = accuracy;
+            
+            // Calculate WPM (5 characters = 1 word)
+            const timeElapsed = (new Date().getTime() - startTime) / 60000; // in minutes
+            const wpm = timeElapsed > 0 ? Math.round((correctKeystrokes / 5) / timeElapsed) : 0;
+            wpmDisplay.textContent = wpm;
+            
+            // Update speed meter (cap at 100 WPM for display)
+            const meterWidth = Math.min(wpm, 100);
+            speedMeter.style.width = `${meterWidth}%`;
+            
+            // Check if all text is typed correctly
+            if (inputText.length === displaySpans.length && allCorrect) {
+                endTest();
+            }
+        }
+
+        // End the typing test
+        function endTest() {
+            clearInterval(timer);
+            isTestRunning = false;
+            textInput.disabled = true;
+            
+            // Calculate final stats
+            const timeElapsed = (currentTime - timeLeft) || 1; // prevent division by zero
+            const minutes = timeElapsed / 60;
+            const wpm = Math.round((correctKeystrokes / 5) / minutes);
+            const accuracy = totalKeystrokes > 0 ? Math.round((correctKeystrokes / totalKeystrokes) * 100) : 100;
+            
+            // Display results
+            finalWpm.textContent = wpm;
+            finalAccuracy.textContent = accuracy;
+            finalChars.textContent = correctKeystrokes;
+            resultsSection.style.display = 'block';
+            
+            // Reset UI
+            startButton.disabled = false;
+        }
+
+        // Reset the typing test
+        function resetTest() {
+            clearInterval(timer);
+            isTestRunning = false;
+            textInput.value = '';
+            textInput.disabled = true;
+            
+            // Reset stats
+            wpmDisplay.textContent = '0';
+            accuracyDisplay.textContent = '100';
+            timerDisplay.textContent = currentTime;
+            speedMeter.style.width = '0%';
+            
+            // Reset display text
+            if (!usingCustomText) {
+                updateDisplayText(getRandomText(currentDifficulty));
+            } else {
+                updateDisplayText(currentText);
+            }
+            
+            // Reset UI
+            startButton.disabled = false;
+            resetButton.disabled = true;
+            resultsSection.style.display = 'none';
+        }
+
+        // Set difficulty level
+        function setDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            if (!usingCustomText) {
+                updateDisplayText(getRandomText(difficulty));
+            }
+        }
+
+        // Set test time
+        function setTime(time) {
+            currentTime = time;
+            timerDisplay.textContent = time;
+        }
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
